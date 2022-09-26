@@ -1,5 +1,7 @@
 # boxfilter-exe
 Executables for Mac, Unix and Windows.
+Clicking at the archive files leads you to a download button.
+
 Boxfilter is a filter for heart rate and other physiological measurements. It discards outliers and retains values with a high proportion of neighbors in a rectangle (box). In other words, it resembles an algorithm used by the human eye, retaining dense bands of points. Here, I provide executables called boxclip for Mac, Linux, and Windows designed to compute the boxfilter for data stored in a comma separated file (.csv, as can be created e.g. in Microsoft Excel©.) Change the name of "boxclipMac" or "boxclipUnix" to boxclip.
 The program is called at a minimum with boxclip data.csv (use ./boxclip data.csv on Mac or Linux) where “data.csv” is an example file in the same directory. Analysed will be the columns named x and y for measurement times and signal. Other columns will be ignored. To use other names, such as "time” and “heartrate” use switches (with double minus): boxclip mydata.csv --time=time --signal=heartrate. The time variable may be omitted, which assumes a regular spacing of time.Use --time=auto to do this. The signal column may contain"NA" for data points not available. Main results will be shown in the browser: the signal before and after filtering. Filtered data are saved on disk in box.csv.
 
