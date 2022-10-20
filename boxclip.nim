@@ -6,6 +6,7 @@ import stats
 import math
 import parseopt
 import strformat
+import times
 
 var tme=newSeq[float](0)
 var goodsig=newSeq[float](0)
@@ -17,7 +18,7 @@ var countmin=0
 var n=1
 var k:int
 
-var filename,timelabel,siglabel,line,storeNA,mode:string
+var filename,timelabel,datelabel,siglabel,line,storeNA,mode:string
 
 
 var na=(9999.0)
@@ -31,6 +32,7 @@ var nbins: int
 var mm:int
 var all:int
 
+datelabel=""
 timelabel="x"
 siglabel="y"
 clipit=(-1)
@@ -57,6 +59,7 @@ while true:
           echo "--width=half the width of box in units of x"
           echo "--height=half the height of the box in units of the signal"
           echo "--time=name of the x-column"
+          echo "--date=name of the x-column"
           echo "--signal=name of the signal column"
           echo "--miny=minimal value oy signals"
           echo "--storeNA=y or n"
@@ -74,7 +77,10 @@ while true:
       if pc.key=="height":
           hgt=parseFloat(pc.val)
       if pc.key=="time":
-          timelabel= toLowerAscii($(pc.val))       
+        timelabel= toLowerAscii($(pc.val))   
+      if pc.key=="date":
+          datelabel= toLowerAscii($(pc.val)) 
+          timelabel=""       
       if pc.key=="signal":
           siglabel= toLowerAscii($(pc.val)) 
       if pc.key=="storeNA":
@@ -99,22 +105,39 @@ var p: CsvParser
 p.open(filename)
 p.readHeaderRow()
 
+if timelabel!="":
+    echo "time:",timelabel
 
+if datelabel=="auto":
+    datelabel=""
+    timelabel="auto"
+    
+if datelabel!="":
+    echo "date:",datelabel 
+    echo "converting to Unixtime" 
+     
 if timelabel=="auto":
     echo ("Forcing regular times")
+    
+
 while p.readRow():
-  count=count+1
-  if timelabel=="auto":
+    count=count+1
+    if timelabel=="auto":
         tme.add( float(count))
-  else:
+    if datelabel!="":
+        var tStr = (p.rowEntry(datelabel))
+        var tmestr= parseTime(tStr, "yyyy-MM-dd HH:mm:ss", utc())
+        tme.add(toUnixFloat(tmestr))
+    if timelabel!="" and timelabel!="auto":
         tme.add(parseFloat(p.rowEntry(timelabel)))
-  yy.add(p.rowEntry(siglabel))
+       
+    yy.add(p.rowEntry(siglabel))
 p.close()
 
 n=yy.len                        # length of signal
 
 var sig=newSeq[float](n)
-
+echo "signal:",siglabel
 for i in 0..n-1:
     sig[i]=0.0
     if yy[i]=="NA":
@@ -138,7 +161,7 @@ for i in 0..n-1:                 # sinal w/o NA
 
          
 if hgt==0.0:
-    rs.push(goodsig)             # defaulz height
+    rs.push(goodsig)             # default height
     mea= rs.mean()
     hgt=floor(mea/4)
 
@@ -372,7 +395,9 @@ let pltS2 = subplots:
     pl1
   plot:
     pl2
+
 pltS2.show()
+
 
   
 
