@@ -15,11 +15,8 @@ var mid=newSeq[float](20)
 var sms=newSeq[float](20)
 var count= 0
 var countmin=0
-var n=1
-var k:int
 
 var filename,timelabel,datelabel,siglabel,line,storeNA,mode:string
-
 
 var na=(9999.0)
 
@@ -134,7 +131,7 @@ while p.readRow():
     yy.add(p.rowEntry(siglabel))
 p.close()
 
-n=yy.len                        # length of signal
+let n=yy.len                        # length of signal
 
 var sig=newSeq[float](n)
 echo "signal:",siglabel
@@ -143,9 +140,9 @@ for i in 0..n-1:
     if yy[i]=="NA":
         sig[i]=na
     else:
-        sig[i]=parseFloat(yy[i])  # makesignal,may contain NA
+        sig[i]=parseFloat(yy[i])  # make signal, may contain NA
 
-#--------------------------------------------
+
 
 var neighbors=newSeq[float](n)   # will store the neighbor proportiom
 var filtered=newSeq[float](n)    # willstore the filtered data including NA
@@ -166,7 +163,7 @@ if hgt==0.0:
     hgt=floor(mea/4)
 
 
-k=n+2*width                      # data extention to estimate to both ends
+let k=n+2*width                  # data extention to estimate to both ends
 var ndat=newSeq[float](k)
 
 
@@ -182,8 +179,6 @@ count=0
 for i in n+width..n+(2*width)-1: # Right
     ndat[i]=sig[count]
     count+=1
-
-
 
 for i in width..width+n-1:       # Main loop
     this=ndat[i]
@@ -203,15 +198,11 @@ for i in width..width+n-1:       # Main loop
 
 
 countmin=0
-for i in 0..n-1:                # restove too small values 
+for i in 0..n-1:                # restore too small values 
     if sig[i]<miny:
         neighbors[i]=0
         countmin+=1
     filtered[i]=na
-
-
-
-
 
 if n<10000:
     nbins=10
@@ -241,7 +232,6 @@ for i in 0..nbins-1:
     
 
 let max1=max(sms[2..nbins-1])
-
 for i in 1..nbins-1:    
     if sms[i]==max1:
         mm= i
@@ -269,13 +259,9 @@ for i in 0..n-1:
      else:
         filtered[i]=na
 
-
-        
-#--------------------------------------------------------
             
                                 # Report data length
                                 
-
 full=float(goodsig.len)
 part=float(count)
 
@@ -287,9 +273,6 @@ rest=abs(part/full)*100.0
 
 echo( $(fmt"{rest:>2.1f}") & "% values remain")
 echo()
-
-
-
 
 proc histo (sms: seq[float], mid: seq[float]) =
 
@@ -314,11 +297,7 @@ proc histo (sms: seq[float], mid: seq[float]) =
 if mode=="h":
     histo(sms,mid)
     quit()
-  
-  
-  
-  
-  
+
   
 let f=open("box.csv",fmWrite) #store results on disk
 line = timelabel & "," & siglabel
